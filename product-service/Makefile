@@ -3,8 +3,12 @@
 docker-clean:
 	docker system prune -f
 
-build:
-	mvn clean package -DskipTests
-
-docker: build docker-clean
+docker: docker-clean
 	docker build . -t shop/product-service
+
+tag:
+	docker tag shop/product-service registry.cn-shenzhen.aliyuncs.com/mrheaaaavy/shop-product-service:latest
+
+push:
+	docker push registry.cn-shenzhen.aliyuncs.com/mrheaaaavy/shop-product-service
+
