@@ -20,7 +20,7 @@ public class MemberHandler {
 
     @GetMapping("/detail")
     public MemberDetailResponse detail() {
-        TradeListResponse tradeListResponse = tradeClient.list();
+        TradeListResponse tradeListResponse = tradeClient.list(1, 18);
 
         return MemberDetailResponse.builder()
                 .member(new Member("member#1"))
