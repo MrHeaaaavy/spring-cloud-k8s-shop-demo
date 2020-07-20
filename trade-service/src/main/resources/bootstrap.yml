@@ -1,0 +1,30 @@
+info:
+    app:
+        name: ${spring.application.name}
+logging:
+    level:
+        root: info
+management:
+    endpoint:
+        health:
+            show-details: always
+    endpoints:
+        jmx:
+            exposure:
+                include: '*'
+        web:
+            exposure:
+                include: '*'
+spring:
+    application:
+        name: trade-service
+    cloud:
+        kubernetes:
+            config:
+                enabled: true
+                name: trade-service-config
+                namespace: default
+            reload:
+                enabled: true
+                mode: event
+                strategy: refresh
