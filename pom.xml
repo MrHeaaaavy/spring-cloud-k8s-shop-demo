@@ -18,6 +18,7 @@
         <module>member-service</module>
         <module>product-service</module>
         <module>trade-service</module>
+        <module>trade-client</module>
     </modules>
 
     <properties>
