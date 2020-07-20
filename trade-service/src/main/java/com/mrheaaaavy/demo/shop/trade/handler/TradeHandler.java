@@ -1,5 +1,7 @@
 package com.mrheaaaavy.demo.shop.trade.handler;
 
+import com.mrheaaaavy.demo.shop.product.client.ProductClient;
+import com.mrheaaaavy.demo.shop.product.response.ProductListResponse;
 import com.mrheaaaavy.demo.shop.trade.response.Trade;
 import com.mrheaaaavy.demo.shop.trade.response.TradeListResponse;
 import org.springframework.http.MediaType;
@@ -16,6 +18,12 @@ import java.util.List;
 @RequestMapping(value = "/trades", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TradeHandler {
 
+    private final ProductClient productClient;
+
+    public TradeHandler(ProductClient productClient) {
+        this.productClient = productClient;
+    }
+
     @GetMapping("")
     public TradeListResponse list(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "15") int size) {
         int start = (page - 1) * size;
@@ -23,7 +31,9 @@ public class TradeHandler {
 
         List<Trade> trades = new ArrayList<>();
         for (int i = start; i < end; i++) {
-            trades.add(new Trade(String.format("trade-%d", i), String.format("customer-%d", i), LocalDateTime.now()));
+            // 这种写法并不推荐，这里只是示例
+            ProductListResponse productListResponse = productClient.list();
+            trades.add(new Trade(String.format("trade-%d", i), String.format("customer-%d", i), LocalDateTime.now(), productListResponse.getProducts()));
         }
 
         return new TradeListResponse()
