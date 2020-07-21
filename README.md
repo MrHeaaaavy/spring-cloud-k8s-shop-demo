@@ -17,6 +17,10 @@
 
 ## Telepresence
 
-swap service in Kubernetes cluster with locals.
+* `curl <cluster-ip>:30080/members`
 
-`telepresence --swap-deployment member-service --expose 8081 --run mvn spring-boot:run -pl member-service`
+* swap service in Kubernetes cluster with locals.
+
+> `telepresence --swap-deployment member-service --expose 8081 --run mvn spring-boot:run -pl member-service`
+
+* modify member-service, save and rebuild, then it could be reloaded

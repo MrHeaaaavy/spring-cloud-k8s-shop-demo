@@ -38,7 +38,7 @@ public class MemberHandler {
     @GetMapping("")
     public MemberListResponse list() {
         List<Member> members = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 20; i++) {
             members.add(new Member(String.format("member#%d", i)));
         }
 
