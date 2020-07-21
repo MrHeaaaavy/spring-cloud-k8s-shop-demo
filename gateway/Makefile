@@ -3,10 +3,7 @@
 docker-clean:
 	docker system prune -f
 
-build:
-	mvn clean package -DskipTests
-
-docker: build docker-clean
+docker: docker-clean
 	docker build . -t shop/gateway
 
 tag:

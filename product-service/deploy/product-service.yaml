@@ -1,47 +1,45 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gateway
+  name: product-service
   namespace: default
   labels:
-    app: gateway
+    app: product-service
 spec:
   ports:
     - name: http
-      port: 80
+      port: 8082
       protocol: TCP
-      targetPort: 8080
-      nodePort: 30080
-  type: NodePort
+      targetPort: 8082
   selector:
-    app: gateway
+    app: product-service
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: gateway
+  name: product-service
   namespace: default
   labels:
-    app: gateway
+    app: product-service
     version: v1
 spec:
   replicas: 1
-  serviceName: gateway
+  serviceName: product-service
   selector:
     matchLabels:
-      app: gateway
+      app: product-service
       version: v1
   template:
     metadata:
       labels:
-        app: gateway
+        app: product-service
         version: v1
     spec:
       serviceAccountName: shop
       containers:
-        - image: registry.cn-shenzhen.aliyuncs.com/mrheaaaavy/shop-gateway:latest
+        - image: registry.cn-shenzhen.aliyuncs.com/mrheaaaavy/shop-product-service:latest
           imagePullPolicy: IfNotPresent
-          name: gateway
+          name: product-service
           resources:
             requests:
               memory: "1Gi"
@@ -62,15 +60,15 @@ spec:
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
-              port: 8080
+              port: 8082
             initialDelaySeconds: 5
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness
-              port: 8080
+              port: 8082
             initialDelaySeconds: 5
             periodSeconds: 5
           ports:
-            - containerPort: 8080
+            - containerPort: 8082
               name: http

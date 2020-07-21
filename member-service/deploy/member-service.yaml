@@ -8,9 +8,9 @@ metadata:
 spec:
   ports:
     - name: http
-      port: 80
+      port: 8081
       protocol: TCP
-      targetPort: 8080
+      targetPort: 8081
   selector:
     app: member-service
 ---
@@ -38,13 +38,37 @@ spec:
       serviceAccountName: shop
       containers:
         - image: registry.cn-shenzhen.aliyuncs.com/mrheaaaavy/shop-member-service:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           name: member-service
           resources:
             requests:
-              memory: "2Gi"
+              memory: "1Gi"
             limits:
-              memory: "2Gi"
+              memory: "1Gi"
+          command:
+            - java
+            - -Duser.timezone=Asia/Shanghai
+            - -Xmx512M
+            - -Xms512M
+            - -XX:MaxMetaspaceSize=256M
+            - -XX:MetaspaceSize=256M
+            - -XX:+UseG1GC
+            - -XX:MaxGCPauseMillis=100
+            - -XX:+ParallelRefProcEnabled
+            - -XX:+PrintGCDetails
+            - org.springframework.boot.loader.JarLauncher
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8081
+            initialDelaySeconds: 5
+            periodSeconds: 5
           ports:
-            - containerPort: 8080
+            - containerPort: 8081
               name: http
