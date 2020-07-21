@@ -14,3 +14,9 @@
 
 
 > member-service/members/detail -> trade-service/trades -> product-service/products
+
+## Telepresence
+
+swap service in Kubernetes cluster with locals.
+
+`telepresence --swap-deployment member-service --expose 8081 --run mvn spring-boot:run -pl member-service`

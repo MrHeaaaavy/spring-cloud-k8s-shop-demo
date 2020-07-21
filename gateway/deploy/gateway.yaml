@@ -17,7 +17,7 @@ spec:
     app: gateway
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: gateway
   namespace: default
@@ -26,7 +26,6 @@ metadata:
     version: v1
 spec:
   replicas: 1
-  serviceName: gateway
   selector:
     matchLabels:
       app: gateway

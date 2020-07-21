@@ -15,7 +15,7 @@ spec:
     app: member-service
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: member-service
   namespace: default
@@ -24,7 +24,6 @@ metadata:
     version: v1
 spec:
   replicas: 1
-  serviceName: member-service
   selector:
     matchLabels:
       app: member-service

@@ -15,7 +15,7 @@ spec:
     app: product-service
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: product-service
   namespace: default
@@ -24,7 +24,6 @@ metadata:
     version: v1
 spec:
   replicas: 1
-  serviceName: product-service
   selector:
     matchLabels:
       app: product-service

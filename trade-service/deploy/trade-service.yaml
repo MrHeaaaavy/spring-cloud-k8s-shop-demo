@@ -15,7 +15,7 @@ spec:
     app: trade-service
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: trade-service
   namespace: default
@@ -24,7 +24,6 @@ metadata:
     version: v1
 spec:
   replicas: 1
-  serviceName: trade-service
   selector:
     matchLabels:
       app: trade-service
