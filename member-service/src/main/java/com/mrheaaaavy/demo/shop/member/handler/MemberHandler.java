@@ -8,6 +8,7 @@ import com.mrheaaaavy.demo.shop.trade.response.TradeListResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,27 +27,31 @@ public class MemberHandler {
     }
 
     @GetMapping("/detail")
-    public MemberDetailResponse detail() {
+    public Mono<MemberDetailResponse> detail() {
         TradeListResponse tradeListResponse = tradeClient.list(1, 18);
 
-        return MemberDetailResponse.builder()
+        var resp = MemberDetailResponse.builder()
                 .member(new Member("member#1"))
                 .trades(tradeListResponse.getTrades())
                 .build();
+
+        return Mono.just(resp);
     }
 
     @GetMapping("")
-    public MemberListResponse list() {
+    public Mono<MemberListResponse> list() {
         List<Member> members = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             members.add(new Member(String.format("member#%d", i)));
         }
 
-        return new MemberListResponse()
+        var resp = new MemberListResponse()
                 .setMembers(members)
                 .setPage(0)
                 .setSize(0)
                 .setTotal(0);
+
+        return Mono.just(resp);
     }
 
 }

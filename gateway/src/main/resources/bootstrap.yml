@@ -3,10 +3,6 @@ info:
         name: ${spring.application.name}
 logging:
     level:
-        org:
-            springframework:
-                cloud:
-                    gateway: debug
         root: info
 management:
     endpoint:

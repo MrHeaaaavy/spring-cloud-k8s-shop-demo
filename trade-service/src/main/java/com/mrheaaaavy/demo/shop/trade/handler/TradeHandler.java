@@ -9,11 +9,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author mrheaaaavy
+ */
 @RestController
 @RequestMapping(value = "/trades", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class TradeHandler {
@@ -25,7 +29,7 @@ public class TradeHandler {
     }
 
     @GetMapping("")
-    public TradeListResponse list(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "15") int size) {
+    public Mono<TradeListResponse> list(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "15") int size) {
         int start = (page - 1) * size;
         int end = page * size;
 
@@ -36,11 +40,13 @@ public class TradeHandler {
             trades.add(new Trade(String.format("trade-%d", i), String.format("customer-%d", i), LocalDateTime.now(), productListResponse.getProducts()));
         }
 
-        return new TradeListResponse()
+        var resp = new TradeListResponse()
                 .setPage(page)
                 .setSize(size)
                 .setTotal(Integer.MAX_VALUE)
                 .setTrades(trades);
+
+        return Mono.just(resp);
     }
 
 }

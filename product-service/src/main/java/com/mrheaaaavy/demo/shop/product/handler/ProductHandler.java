@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,17 +20,19 @@ import java.util.Random;
 public class ProductHandler {
 
     @GetMapping
-    public ProductListResponse list() {
+    public Mono<ProductListResponse> list() {
         Random random = new Random();
         List<Product> products = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             products.add(new Product(String.format("product#%d", i), random.nextInt()));
         }
 
-        return new ProductListResponse()
+        var resp = new ProductListResponse()
                 .setPage(1)
                 .setSize(15)
                 .setTotal(10)
                 .setProducts(products);
+
+        return Mono.just(resp);
     }
 }
