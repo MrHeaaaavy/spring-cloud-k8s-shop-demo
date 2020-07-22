@@ -1,17 +1,17 @@
 package com.mrheaaaavy.demo.shop.member.handler;
 
 import com.mrheaaaavy.demo.shop.member.response.Member;
-import com.mrheaaaavy.demo.shop.member.response.MemberDetailResponse;
-import com.mrheaaaavy.demo.shop.member.response.MemberListResponse;
 import com.mrheaaaavy.demo.shop.trade.client.TradeClient;
-import com.mrheaaaavy.demo.shop.trade.response.TradeListResponse;
+import com.mrheaaaavy.demo.shop.trade.response.Trade;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author mrheaaaavy
@@ -27,31 +27,21 @@ public class MemberHandler {
     }
 
     @GetMapping("/detail")
-    public Mono<MemberDetailResponse> detail() {
-        TradeListResponse tradeListResponse = tradeClient.list(1, 18);
-
-        var resp = MemberDetailResponse.builder()
-                .member(new Member("member#1"))
-                .trades(tradeListResponse.getTrades())
-                .build();
-
-        return Mono.just(resp);
+    public Mono<Member> detail() {
+        Flux<Trade> trades = tradeClient.list(1, 18);
+        var member = new Member().setName("#1");
+        return Mono.just(member)
+                .flatMap((Function<Member, Mono<Member>>) m -> trades.collectList().map((Function<List<Trade>, Member>) m::setTrades));
     }
 
     @GetMapping("")
-    public Mono<MemberListResponse> list() {
+    public Flux<Member> list() {
         List<Member> members = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            members.add(new Member(String.format("member#%d", i)));
+            members.add(new Member().setName(String.format("member#%d", i)));
         }
 
-        var resp = new MemberListResponse()
-                .setMembers(members)
-                .setPage(0)
-                .setSize(0)
-                .setTotal(0);
-
-        return Mono.just(resp);
+        return Flux.fromIterable(members);
     }
 
 }

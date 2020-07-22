@@ -1,19 +1,21 @@
 package com.mrheaaaavy.demo.shop.trade.handler;
 
 import com.mrheaaaavy.demo.shop.product.client.ProductClient;
-import com.mrheaaaavy.demo.shop.product.response.ProductListResponse;
+import com.mrheaaaavy.demo.shop.product.response.Product;
 import com.mrheaaaavy.demo.shop.trade.response.Trade;
-import com.mrheaaaavy.demo.shop.trade.response.TradeListResponse;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+
 
 /**
  * @author mrheaaaavy
@@ -29,24 +31,22 @@ public class TradeHandler {
     }
 
     @GetMapping("")
-    public Mono<TradeListResponse> list(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "15") int size) {
+    public Flux<Trade> list(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size) {
         int start = (page - 1) * size;
         int end = page * size;
 
-        List<Trade> trades = new ArrayList<>();
+        List<Integer> ids = new ArrayList<>();
         for (int i = start; i < end; i++) {
-            // 这种写法并不推荐，这里只是示例
-            ProductListResponse productListResponse = productClient.list();
-            trades.add(new Trade(String.format("trade-%d", i), String.format("customer-%d", i), LocalDateTime.now(), productListResponse.getProducts()));
+            ids.add(i);
         }
 
-        var resp = new TradeListResponse()
-                .setPage(page)
-                .setSize(size)
-                .setTotal(Integer.MAX_VALUE)
-                .setTrades(trades);
+        Flux<Integer> tradeIds = Flux.fromIterable(ids);
 
-        return Mono.just(resp);
+        return Flux.from(tradeIds)
+                .flatMap((Function<Integer, Mono<Trade>>) integer -> Mono.just(new Trade().setTradeNo("trade#" + integer).setCreatedAt(LocalDateTime.now()).setCustomer("consumer#" + integer)))
+                .flatMap((Function<Trade, Mono<Trade>>) trade -> Mono.just(trade).flatMap((Function<Trade, Mono<Trade>>) trade1 -> {
+                    Flux<Product> products = productClient.list();
+                    return products.collectList().map(trade1::setProducts);
+                }));
     }
-
 }
