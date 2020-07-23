@@ -24,6 +24,7 @@ metadata:
     version: v1
 spec:
   replicas: 1
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: trade-service
@@ -37,18 +38,18 @@ spec:
       serviceAccountName: shop
       containers:
         - image: registry.cn-shenzhen.aliyuncs.com/mrheaaaavy/shop-trade-service:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           name: trade-service
           resources:
             requests:
-              memory: "1Gi"
+              memory: "3Gi"
             limits:
-              memory: "1Gi"
+              memory: "3Gi"
           command:
             - java
             - -Duser.timezone=Asia/Shanghai
-            - -Xmx512M
-            - -Xms512M
+            - -Xmx2680M
+            - -Xms2680M
             - -XX:MaxMetaspaceSize=256M
             - -XX:MetaspaceSize=256M
             - -XX:+UseG1GC
