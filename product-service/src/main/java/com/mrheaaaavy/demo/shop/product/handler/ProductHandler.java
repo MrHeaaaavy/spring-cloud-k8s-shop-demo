@@ -23,7 +23,7 @@ public class ProductHandler {
         Random random = new Random();
         List<Product> products = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            products.add(new Product(String.format("product#%d", i), random.nextInt()));
+            products.add(new Product(String.format("product#%d", i).intern(), random.nextInt()));
         }
 
         return Flux.fromIterable(products);

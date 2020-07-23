@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -40,13 +39,11 @@ public class TradeHandler {
             ids.add(i);
         }
 
-        Flux<Integer> tradeIds = Flux.fromIterable(ids);
+        return Flux.fromIterable(ids).flatMap((Function<Integer, Mono<Trade>>) integer -> {
+            Trade trade = new Trade("trade#" + integer, "customer#" + integer);
+            Flux<Product> products = productClient.list();
+            return products.collectList().map(trade::setProducts);
+        });
 
-        return Flux.from(tradeIds)
-                .flatMap((Function<Integer, Mono<Trade>>) integer -> Mono.just(new Trade().setTradeNo("trade#" + integer).setCreatedAt(LocalDateTime.now()).setCustomer("consumer#" + integer)))
-                .flatMap((Function<Trade, Mono<Trade>>) trade -> Mono.just(trade).flatMap((Function<Trade, Mono<Trade>>) trade1 -> {
-                    Flux<Product> products = productClient.list();
-                    return products.collectList().map(trade1::setProducts);
-                }));
     }
 }

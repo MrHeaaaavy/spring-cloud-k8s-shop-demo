@@ -42,20 +42,19 @@ spec:
           name: member-service
           resources:
             requests:
-              memory: "3Gi"
+              memory: "2Gi"
             limits:
-              memory: "3Gi"
+              memory: "2Gi"
           command:
             - java
             - -Duser.timezone=Asia/Shanghai
-            - -Xmx2680M
-            - -Xms2680M
-            - -XX:MaxMetaspaceSize=256M
-            - -XX:MetaspaceSize=256M
-            - -XX:+UseG1GC
-            - -XX:MaxGCPauseMillis=100
+            - -XX:ErrorFile=/dumps/hs_err_pid%p.log
+            - -XX:+HeapDumpOnOutOfMemoryError
+            - -XX:HeapDumpPath=/dumps/
+            - -XX:+AlwaysPreTouch
+            - -XX:+UseContainerSupport
             - -XX:+ParallelRefProcEnabled
-            - -XX:+PrintGCDetails
+            - -Xlog:gc*
             - org.springframework.boot.loader.JarLauncher
           livenessProbe:
             httpGet:
@@ -72,3 +71,10 @@ spec:
           ports:
             - containerPort: 8081
               name: http
+          volumeMounts:
+            - mountPath: /dumps
+              name: heap-dumps
+      volumes:
+        - name: heap-dumps
+          hostPath:
+            path: /var/log/dumps/
