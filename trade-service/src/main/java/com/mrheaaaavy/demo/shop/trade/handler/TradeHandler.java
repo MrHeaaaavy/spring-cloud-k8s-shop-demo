@@ -32,16 +32,11 @@ public class TradeHandler {
     @GetMapping("")
     public Flux<Trade> list(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size) {
         int start = (page - 1) * size;
-        int end = page * size;
 
-        List<Integer> ids = new ArrayList<>();
-        for (int i = start; i < end; i++) {
-            ids.add(i);
-        }
+        Flux<Product> products = productClient.list();
 
-        return Flux.fromIterable(ids).flatMap((Function<Integer, Mono<Trade>>) integer -> {
-            Trade trade = new Trade("trade#" + integer, "customer#" + integer);
-            Flux<Product> products = productClient.list();
+        return Flux.range(start, size).flatMap((Function<Integer, Mono<Trade>>) integer -> {
+            Trade trade = new Trade(String.format("trade#%d", integer).intern(), String.format("customer#%d", integer).intern());
             return products.collectList().map(trade::setProducts);
         });
 
