@@ -3,21 +3,16 @@ package com.mrheaaaavy.demo.shop.member.handler;
 import com.mrheaaaavy.demo.shop.member.response.Member;
 import com.mrheaaaavy.demo.shop.trade.client.TradeClient;
 import com.mrheaaaavy.demo.shop.trade.response.Trade;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 /**
  * @author mrheaaaavy
  */
-@RestController
-@RequestMapping("/members")
+@Component
 public class MemberHandler {
 
     private final TradeClient tradeClient;
@@ -26,22 +21,23 @@ public class MemberHandler {
         this.tradeClient = tradeClient;
     }
 
-    @GetMapping("/detail")
-    public Mono<Member> detail() {
-        Flux<Trade> trades = tradeClient.list(1, 18);
-        var member = new Member().setName("#1");
-        return Mono.just(member)
-                .flatMap((Function<Member, Mono<Member>>) m -> trades.collectList().map((Function<List<Trade>, Member>) m::setTrades));
+    public Mono<ServerResponse> detail(ServerRequest request) {
+        Flux<Trade> trades = tradeClient.list(1, 10);
+
+        Mono<Member> memberMono = Mono.just(new Member().setName("member#1")).flatMap(member -> trades.collectList().map(member::setTrades));
+
+        return ServerResponse.ok()
+                .body(memberMono, Member.class);
     }
 
-    @GetMapping("")
-    public Flux<Member> list() {
-        List<Member> members = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            members.add(new Member().setName(String.format("member#%d", i)));
-        }
+    public Mono<ServerResponse> list(ServerRequest request) {
+        int page = request.queryParam("page").map(Integer::parseInt).orElse(1);
+        int size = request.queryParam("size").map(Integer::parseInt).orElse(15);
+        int start = (page - 1) * size;
+        Flux<Member> memberFlux = Flux.range(start, size).map(integer -> new Member().setName("member#" + integer));
 
-        return Flux.fromIterable(members);
+        return ServerResponse.ok()
+                .body(memberFlux, Member.class);
     }
 
 }
