@@ -1,9 +1,9 @@
-FROM adoptopenjdk/openjdk11:alpine-jre as extractor
+FROM adoptopenjdk/openjdk11:alpine-slim as extractor
 WORKDIR /application
 COPY target/*.jar application.jar
 RUN java -Djarmode=layertools -jar application.jar extract
 
-FROM adoptopenjdk/openjdk11:alpine-jre
+FROM adoptopenjdk/openjdk11:alpine-slim
 WORKDIR /application
 COPY --from=extractor /application/dependencies/ ./
 COPY --from=extractor /application/snapshot-dependencies/ ./
