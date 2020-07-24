@@ -1,15 +1,9 @@
 ## Spring Cloud K8s Shop Demo
 
-* make sure you have a running Kubernetes cluster first
-* clone this project to local
-* `mvn clean package -DskipTests`
-* prepare docker images: `make all`
-* apply resources to Kubernetes:
-  * `kubectl apply -f ./rbac.yaml`
-  * `kubectl apply -f gateway/deploy/`
-  * `kubectl apply -f member-service/deploy/`
-  * `kubectl apply -f product-service/deploy/`
-  * `kubectl apply -f trade-service/deploy/`
+* Make sure you have a running Kubernetes cluster first
+* Clone this project to local
+* Build with: `make -pl gateway,member-service,product-service,trade-service clean install docker:build -DskipTests`
+* Apply resources to Kubernetes: `kubectl apply -R -f deploy/`
 * `curl <cluster-ip>:30080/members/detail`
 
 
@@ -19,8 +13,8 @@
 
 * `curl <cluster-ip>:30080/members`
 
-* swap service in Kubernetes cluster with locals.
+* Swap deployment in Kubernetes cluster with locals.
 
 > `telepresence --swap-deployment member-service --expose 8081 --run mvn spring-boot:run -pl member-service`
 
-* modify member-service, save and rebuild, then it could be reloaded
+* Modify member-service, save and rebuild, then it could be reloaded
