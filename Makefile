@@ -5,4 +5,4 @@ SUBMODULES = gateway member-service product-service trade-service
 all: $(SUBMODULES)
 
 $(SUBMODULES):
-	$(MAKE) -C $@ docker tag
+	$(MAKE) -C $@ docker tag push

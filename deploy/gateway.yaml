@@ -54,7 +54,9 @@ spec:
             - -XX:+HeapDumpOnOutOfMemoryError
             - -XX:HeapDumpPath=/dumps/
             - -XX:+AlwaysPreTouch
+            - -XX:+UseG1GC
             - -XX:+UseContainerSupport
+            - -XX:MaxRAMPercentage=80
             - -XX:+ParallelRefProcEnabled
             - -Xlog:gc*
             - org.springframework.boot.loader.JarLauncher
