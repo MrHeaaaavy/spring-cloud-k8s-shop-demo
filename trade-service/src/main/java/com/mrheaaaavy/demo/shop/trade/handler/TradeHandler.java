@@ -4,21 +4,20 @@ import com.mrheaaaavy.demo.shop.product.client.ProductClient;
 import com.mrheaaaavy.demo.shop.product.response.Product;
 import com.mrheaaaavy.demo.shop.trade.response.Trade;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.function.Function;
-
 
 /**
- * @author mrheaaaavy
+ * @author 杨振彪 <yangzhenbiao@gdmcmc.cn>
  */
-@RestController
-@RequestMapping(value = "/trades", consumes = {MediaType.APPLICATION_JSON_VALUE}, produces = {MediaType.APPLICATION_JSON_VALUE})
+@Component
 public class TradeHandler {
 
     private final ProductClient productClient;
@@ -27,16 +26,19 @@ public class TradeHandler {
         this.productClient = productClient;
     }
 
-    @GetMapping("")
-    public Flux<Trade> list(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "5") int size) {
+    public Mono<ServerResponse> list(ServerRequest request) {
+        int page = request.queryParam("page").map(Integer::parseInt).orElse(1);
+        int size = request.queryParam("size").map(Integer::parseInt).orElse(15);
         int start = (page - 1) * size;
 
         Flux<Product> products = productClient.list();
-
-        return Flux.range(start, size).flatMap((Function<Integer, Mono<Trade>>) integer -> {
-            Trade trade = new Trade(String.format("trade#%d", integer).intern(), String.format("customer#%d", integer).intern());
+        Flux<Trade> tradeFlux = Flux.range(start, size).flatMap(integer -> {
+            Trade trade = new Trade("trade#%d" + integer, "customer#%d" + integer);
             return products.collectList().map(trade::setProducts);
         });
+
+        return ServerResponse.ok()
+                .body(tradeFlux, Trade.class);
 
     }
 }
