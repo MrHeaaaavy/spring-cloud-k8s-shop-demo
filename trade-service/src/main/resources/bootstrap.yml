@@ -23,7 +23,6 @@ spring:
             config:
                 enabled: true
                 name: trade-service-config
-                namespace: default
             reload:
                 enabled: true
                 mode: event
