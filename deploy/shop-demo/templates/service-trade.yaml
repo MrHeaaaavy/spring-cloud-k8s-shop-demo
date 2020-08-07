@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: trade-service
+  labels:
+    app.kubernetes.io/component: trade-service
+{{ include "shop-demo.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.tradeService.service.type }}
+  ports:
+    - port: {{ .Values.tradeService.ports.external }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/component: trade-service
+    app.kubernetes.io/name: {{ include "shop-demo.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

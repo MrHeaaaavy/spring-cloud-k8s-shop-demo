@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  labels:
+    app.kubernetes.io/component: product-service
+{{ include "shop-demo.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.productService.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: product-service
+      app.kubernetes.io/name: {{ include "shop-demo.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: product-service
+        app.kubernetes.io/name: {{ include "shop-demo.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "shop-demo.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.productService.image }}:{{ .Values.productService.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: JAVA_OPTS
+            value: {{ .Values.productService.env.javaOpts}}
+          ports:
+            - name: http
+              containerPort: {{ .Values.productService.ports.internal}}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.productService.healthCheck.liveness.path}}
+              port: {{ .Values.productService.ports.internal }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.productService.healthCheck.readiness.path}}
+              port: {{ .Values.productService.ports.internal }}
+          resources:
+            {{- toYaml .Values.productService.resources | nindent 12 }}

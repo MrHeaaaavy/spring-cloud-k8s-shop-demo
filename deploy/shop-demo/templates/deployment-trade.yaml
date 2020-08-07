@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trade-service
+  labels:
+    app.kubernetes.io/component: trade-service
+{{ include "shop-demo.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.tradeService.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: trade-service
+      app.kubernetes.io/name: {{ include "shop-demo.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: trade-service
+        app.kubernetes.io/name: {{ include "shop-demo.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "shop-demo.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.tradeService.image }}:{{ .Values.tradeService.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: JAVA_OPTS
+            value: {{ .Values.tradeService.env.javaOpts}}
+          ports:
+            - name: http
+              containerPort: {{ .Values.tradeService.ports.internal}}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.tradeService.healthCheck.liveness.path}}
+              port: {{ .Values.tradeService.ports.internal }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.tradeService.healthCheck.readiness.path}}
+              port: {{ .Values.tradeService.ports.internal }}
+          resources:
+            {{- toYaml .Values.tradeService.resources | nindent 12 }}

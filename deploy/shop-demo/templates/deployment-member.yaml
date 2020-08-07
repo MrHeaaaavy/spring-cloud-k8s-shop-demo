@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: member-service
+  labels:
+    app.kubernetes.io/component: member-service
+{{ include "shop-demo.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.memberService.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: member-service
+      app.kubernetes.io/name: {{ include "shop-demo.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: member-service
+        app.kubernetes.io/name: {{ include "shop-demo.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "shop-demo.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.memberService.image }}:{{ .Values.memberService.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: JAVA_OPTS
+            value: {{ .Values.memberService.env.javaOpts}}
+          ports:
+            - name: http
+              containerPort: {{ .Values.memberService.ports.internal}}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.memberService.healthCheck.liveness.path}}
+              port: {{ .Values.memberService.ports.internal }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.memberService.healthCheck.readiness.path}}
+              port: {{ .Values.memberService.ports.internal }}
+          resources:
+            {{- toYaml .Values.memberService.resources | nindent 12 }}

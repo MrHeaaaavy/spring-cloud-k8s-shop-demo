@@ -1,4 +1,4 @@
-SUBMODULES = gateway,member-service,product-service,trade-service
+SUBMODULES = member-service,product-service,trade-service
 
 .PHONY: build docker publish
 
