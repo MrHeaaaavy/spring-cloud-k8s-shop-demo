@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.mrheaaaavy.demo.shop</groupId>
         <artifactId>parent</artifactId>
-        <version>2020.07.1</version>
+        <version>2020.08.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>gateway</artifactId>
-    <version>2020.07.1</version>
+    <version>2020.08.0</version>
     <name>gateway</name>
     <packaging>jar</packaging>
 

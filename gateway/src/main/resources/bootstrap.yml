@@ -16,6 +16,11 @@ management:
         web:
             exposure:
                 include: '*'
+    health:
+        readynessstate:
+            enabled: true
+        livenessstate:
+            enabled: true
 spring:
     application:
         name: gateway
