@@ -5,7 +5,7 @@
     <parent>
         <artifactId>parent</artifactId>
         <groupId>com.mrheaaaavy.demo.shop</groupId>
-        <version>2020.07.0</version>
+        <version>2020.07.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.mrheaaaavy.demo.shop</groupId>
             <artifactId>product-client</artifactId>
-            <version>2020.07.0</version>
+            <version>2020.07.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>

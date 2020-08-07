@@ -5,11 +5,11 @@
     <parent>
         <groupId>com.mrheaaaavy.demo.shop</groupId>
         <artifactId>parent</artifactId>
-        <version>2020.07.0</version>
+        <version>2020.07.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <artifactId>product-service</artifactId>
-    <version>2020.07.0</version>
+    <version>2020.07.1</version>
     <name>product-service</name>
     <packaging>jar</packaging>
 
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>com.mrheaaaavy.demo.shop</groupId>
             <artifactId>product-client</artifactId>
-            <version>2020.07.0</version>
+            <version>2020.07.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
