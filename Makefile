@@ -3,6 +3,7 @@ SUBMODULES = gateway,member-service,product-service,trade-service
 .PHONY: build docker publish
 
 build:
+	mvn -N clean install -DskipTests
 	mvn clean install -DskipTests
 
 docker: build
