@@ -1,5 +1,3 @@
-SUBMODULES = member-service,product-service,trade-service
-
 .PHONY: build docker publish
 
 build:
@@ -7,7 +5,7 @@ build:
 	mvn clean install -DskipTests
 
 docker: build
-	mvn -pl ${SUBMODULES} clean package docker:build -DskipTests
+	mvn clean docker:build -DskipTests
 
 publish:
-	mvn -pl ${SUBMODULES} docker:push
+	mvn docker:push
